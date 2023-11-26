@@ -6,17 +6,18 @@ phases:
       # - Codebuildが標準で使うことができる環境変数
       - version=$CODEBUILD_RESOLVED_SOURCE_VERSION
       - accountID=$CODEBUILD_ACCOUNT_ID
+      - echo $accountID
       # - Dockerデーモンを起動するために必要な冒頭2行
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - aws --version
-      - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com
+      - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin "${accountID}".dkr.ecr.ap-northeast-1.amazonaws.com
       - cp backend/.env.example backend/.env
       - . backend/deploy/set_env_variables.sh
       - bash backend/deploy/set_env_variables.sh
-      - NGINX_PHP_ECR_REPO_URL=${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com/nginx-php
-      - PHPFPM_ECR_REPO_URL=${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com/php-fpm
-      - NGINX_REACT_ECR_REPO_URL=${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com/nginx-react
+      - NGINX_PHP_ECR_REPO_URL="${accountID}".dkr.ecr.ap-northeast-1.amazonaws.com/nginx-php
+      - PHPFPM_ECR_REPO_URL="${accountID}".dkr.ecr.ap-northeast-1.amazonaws.com/php-fpm
+      - NGINX_REACT_ECR_REPO_URL="${accountID}".dkr.ecr.ap-northeast-1.amazonaws.com/nginx-react
   build:
     commands:
       - echo Build started on `date`
