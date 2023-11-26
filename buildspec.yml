@@ -35,6 +35,7 @@ phases:
       - echo Build completed on `date`
       - echo "Running Laravel tests..."
       - docker run -d --name temp_container $CURRENT_PHPFPM_ECR_REPO_URL sleep infinity
+      - docker exec temp_container touch /app/database/test.sqlite
       - docker exec temp_container vendor/bin/phpunit
       - docker exec temp_container php artisan migrate
       - docker rm -f temp_container
