@@ -1,0 +1,14 @@
+version: '3'
+services:
+  react:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    command: bash -c "npm install && npm start"
+    ports:
+      - '3000:3000'
+    networks:
+      - backend_sail
+networks:
+  backend_sail:
+    external: true

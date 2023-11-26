@@ -1,0 +1,15 @@
+FROM node:16.14.2-alpine3.15 AS build
+
+WORKDIR /usr/src/app
+
+COPY ./ ./
+# 本番ではAWSから(buildする前に環境変数を読み込む必要がある)
+COPY .env.production .env
+RUN apk update && apk add bash
+RUN npm install && npm run build
+
+FROM nginx:stable-alpine AS server
+# 404 not found errorの解消
+# ALB用のHealthCheckエンドポイント作成
+COPY ./default.conf /etc/nginx/conf.d/
+COPY --from=build /usr/src/app/build /usr/share/nginx/html

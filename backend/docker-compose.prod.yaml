@@ -1,0 +1,68 @@
+version: "3"
+
+volumes:
+  php_socket:
+  mysql:
+  redis:
+networks:
+  web:
+    driver: bridge
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./infra/php/Dockerfile
+    volumes:
+      - php_socket:/var/run/php-fpm
+    networks:
+      - web
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./infra/web/Dockerfile
+    volumes:
+      - php_socket:/var/run/php-fpm
+    ports:
+      - "8081:80"
+    depends_on:
+      - app
+    networks:
+      - web
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - "--fail"
+        - "http://localhost/api/health_check"
+      retries: 3
+      timeout: 5s
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      TZ: "Asia/Tokyo"
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./infra/db/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3308:3306
+    networks:
+      - web
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+    networks:
+      - web

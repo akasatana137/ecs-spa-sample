@@ -1,0 +1,49 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      # - Codebuildが標準で使うことができる環境変数
+      - version=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - accountID=$CODEBUILD_ACCOUNT_ID
+      # - Dockerデーモンを起動するために必要な冒頭2行
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      - aws --version
+      - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com
+      - cp backend/.env.example backend/.env
+      - . backend/deploy/set_env_variables.sh
+      - bash backend/deploy/set_env_variables.sh
+      - NGINX_PHP_ECR_REPO_URL=${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com/nginx-php
+      - PHPFPM_ECR_REPO_URL=${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com/php-fpm
+      - NGINX_REACT_ECR_REPO_URL=${accountID}.dkr.ecr.ap-northeast-1.amazonaws.com/nginx-react
+  build:
+    commands:
+      - echo Build started on `date`
+      - docker build -t nginx-php:"${version}" -f ./backend/infra/web/Dockerfile ./backend
+      - docker tag nginx-php:"${version}" ${NGINX_PHP_ECR_REPO_URL}:"${version}"
+      - CURRENT_NGINX_PHP_ECR_REPO_URL="${NGINX_PHP_ECR_REPO_URL}":"${version}"
+      - docker build -t php-fpm:"${version}" -f ./backend/infra/php/Dockerfile ./backend
+      - docker tag php-fpm:"${version}" "${PHPFPM_ECR_REPO_URL}":"${version}"
+      - CURRENT_PHPFPM_ECR_REPO_URL="${PHPFPM_ECR_REPO_URL}":"${version}"
+      - docker build -t nginx-react:"${version}" -f ./frontend/Dockerfile.prod ./frontend
+      - docker tag nginx-react:"${version}" "${NGINX_REACT_ECR_REPO_URL}":"${version}"
+      - CURRENT_NGINX_REACT_ECR_REPO_URL="${NGINX_REACT_ECR_REPO_URL}":"${version}"
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo "Running Laravel tests..."
+      - docker run -d --name temp_container CURRENT_PHPFPM_ECR_REPO_URL sleep infinity
+      - docker exec temp_container vendor/bin/phpunit
+      - docker exec temp_container php artisan migrate
+      - docker rm -f temp_container
+      - echo Pushing the Docker images...
+      - docker push $CURRENT_NGINX_PHP_ECR_REPO_URL
+      - docker push $CURRENT_PHPFPM_ECR_REPO_URL
+      - docker push $CURRENT_NGINX_REACT_ECR_REPO_URL
+      - printf '[{"name":"ecs-spa-container-nginx-frontend","imageUri":"%s"}]' $CURRENT_NGINX_REACT_ECR_REPO_URL > frontend_imagedefinitions.json
+      - printf '[{"name":"ecs-spa-container-nginx-backend","imageUri":"%s"}, {"name":"ecs-spa-container-phpfpm-backend","imageUri":"%s"}]' $CURRENT_NGINX_PHP_ECR_REPO_URL $CURRENT_PHPFPM_ECR_REPO_URL > backend_imagedefinitions.json
+artifacts:
+  files:
+    - frontend_imagedefinitions.json
+    - backend_imagedefinitions.json

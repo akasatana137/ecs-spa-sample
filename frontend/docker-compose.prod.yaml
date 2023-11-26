@@ -1,0 +1,23 @@
+version: '3'
+services:
+  react:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3000:80'
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '--fail'
+        - 'http://localhost/health'
+      retries: 3
+      timeout: 5s
+    networks:
+      - backend_web
+networks:
+  backend_web:
+    external: true

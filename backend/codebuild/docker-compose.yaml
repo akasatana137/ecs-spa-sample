@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  dind:
+    build:
+      context: ../
+      dockerfile: ./codebuild/Dockerfile
+    privileged: true
+    command: nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
