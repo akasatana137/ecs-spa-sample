@@ -5,7 +5,7 @@ phases:
     commands:
       # - Codebuildが標準で使うことができる環境変数
       - version=$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - accountID=$CODEBUILD_ACCOUNT_ID
+      - accountID=806467626197
       - echo $accountID
       # - Dockerデーモンを起動するために必要な冒頭2行
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
