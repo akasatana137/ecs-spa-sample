@@ -23,11 +23,13 @@ class RegisterController extends Controller
         ]);
 
         // 確認メールを送信
-        Mail::to($user->email)->send(new EmailVerification($user));
-
-        return $user
-            ? response()->json($user, 201)
-            : response()->json([], 500);
+        try {
+            Mail::to($user->email)->send(new EmailVerification($user));
+            return response()->json($user, 201);
+        } catch (\Exception $e) {
+            User::destroy($user->id);
+            return response()->json([], 500);
+        }
     }
 
     // mail送信確認
