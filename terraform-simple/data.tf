@@ -29,11 +29,23 @@ locals {
   IMA_POLICY_ARN_AmazonSSMReadOnlyAccess            = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
 
   # ses
-  app_mail_mailer     = "smtp"
-  app_mail_host       = "email-smtp.${var.region}.amazonaws.com"
-  app_mail_port       = 587
-  app_mail_encryption = "tls"
-  app_mail_from_name  = "ToDoアプリ"
+  app_mail_mailer       = "smtp"
+  app_mail_host         = "email-smtp.${var.region}.amazonaws.com"
+  app_mail_port         = "587"
+  app_mail_encryption   = "tls"
+  app_mail_from_name    = "ToDoアプリ"
+  app_mail_form_address = "mail@akasatana.net"
+
+  # auto scale
+  IAM_POLICY_ARN_AmazonEC2ContainerServiceAutoscaleRole = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole"
+  min_capacity                                          = 2
+  max_capacity                                          = 2
+  scale_up_threshold                                    = 70
+  scale_down_threshold                                  = 25
+
+  # elasticache redis
+  redis_port     = "6379"
+  session_driver = "redis"
 
   # alb maintenance HTML
   maintenance_body = <<EOF

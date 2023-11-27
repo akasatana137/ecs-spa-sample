@@ -361,7 +361,8 @@ resource "aws_codepipeline" "pipeline" {
       configuration = {
         ConnectionArn = aws_codestarconnections_connection.github.arn
         # 後で修正(テスト)
-        FullRepositoryId = "yoshio464/laravel-react-todo-app"
+        # FullRepositoryId = "yoshio464/laravel-react-todo-app"
+        FullRepositoryId = "akasatana137/ecs-spa-sample"
         BranchName       = "master"
       }
     }

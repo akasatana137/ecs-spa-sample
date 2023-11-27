@@ -85,6 +85,28 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_ses" {
   role       = aws_iam_role.ecs_task_execution_role.name
 }
 
+# elasticache redis(とりあえず全部許可)
+resource "aws_iam_policy" "elasticache_create_session_policy" {
+  name = "${local.app_name}-elasticache-create-session-policy"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "elasticache:*",
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_elasticache" {
+  policy_arn = aws_iam_policy.elasticache_create_session_policy.arn
+  role       = aws_iam_role.ecs_task_execution_role.name
+}
+
 ###########
 ## ECS Task Container Log Group
 ###########
@@ -253,11 +275,20 @@ resource "aws_ecs_task_definition" "backend" {
         },
         {
           name : "MAIL_FROM_ADDRESS"
-          value : aws_ses_domain_mail_from.this.mail_from_domain
+          value : local.app_mail_form_address
         },
         {
           name : "MAIL_FROM_NAME"
           value : local.app_mail_from_name
+        },
+        # Elasticache
+        {
+          name : "REDIS_PORT"
+          value : local.redis_port
+        },
+        {
+          name : "SSESSION_DRIVER"
+          value : local.session_driver
         }
       ]
       # 今回はcodebuild内でDBのMigrationを実行するために、環境変数を挿入するので以下は重複
@@ -295,8 +326,12 @@ resource "aws_ecs_task_definition" "backend" {
         {
           name : "MAIL_PASSWORD"
           valueFrom : aws_ssm_parameter.smtp_password.arn
-        }
+        },
         # Redis
+        {
+          name : "REDIS_HOST"
+          valueFrom : aws_ssm_parameter.elasticache_url.arn
+        }
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -328,7 +363,7 @@ resource "aws_ecs_service" "frontend" {
   cluster                            = aws_ecs_cluster.this.id
   platform_version                   = "LATEST"
   task_definition                    = aws_ecs_task_definition.frontend.arn
-  desired_count                      = 1
+  desired_count                      = 2
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
   propagate_tags                     = "SERVICE"
