@@ -6,22 +6,7 @@
 
 ## 使用技術
 
-<img src="https://img.shields.io/badge/-Nginx-269539.svg?logo=nginx&style=plastic">
-<img src="https://img.shields.io/badge/-Node.js-fff.svg?logo=node.js&style=plastic">
-<img src="https://img.shields.io/badge/-Typescript-fff.svg?logo=typescript&style=plastic">
-<img src="https://img.shields.io/badge/-React-fff.svg?logo=react&style=plastic">
-<img src="https://img.shields.io/badge/-Sass-fff.svg?logo=sass&style=plastic">
-<img src="https://img.shields.io/badge/-PHP-fff.svg?logo=php&style=plastic">
-<img src="https://img.shields.io/badge/-Laravel-fff.svg?logo=laravel&style=plastic">
-
-<img src="https://img.shields.io/badge/-AWS-232F3E.svg?logo=amazon-aws&style=plastic">
-<img src="https://img.shields.io/badge/-Terraform-fff.svg?logo=terraform&style=plastic">
-<img src="https://img.shields.io/badge/-SQLite-003B57.svg?logo=sqlite&style=plastic">
-<img src="https://img.shields.io/badge/-Mysql-fff.svg?logo=mysql&style=plastic">
-<img src="https://img.shields.io/badge/-Redis-fff.svg?logo=redis&style=plastic">
-<img src="https://img.shields.io/badge/-Docker-fff.svg?logo=docker&style=plastic">
-<img src="https://img.shields.io/badge/-Git-fff.svg?logo=git&style=plastic">
-<img src="https://img.shields.io/badge/-Github-181717.svg?logo=github&style=plastic">
+<img src="https://img.shields.io/badge/-Nginx-269539.svg?logo=nginx&style=plastic"><img src="https://img.shields.io/badge/-Node.js-fff.svg?logo=node.js&style=plastic"><img src="https://img.shields.io/badge/-Typescript-fff.svg?logo=typescript&style=plastic"><img src="https://img.shields.io/badge/-React-fff.svg?logo=react&style=plastic"><img src="https://img.shields.io/badge/-Sass-fff.svg?logo=sass&style=plastic"><img src="https://img.shields.io/badge/-PHP-fff.svg?logo=php&style=plastic"><img src="https://img.shields.io/badge/-Laravel-fff.svg?logo=laravel&style=plastic"><img src="https://img.shields.io/badge/-AWS-232F3E.svg?logo=amazon-aws&style=plastic"><img src="https://img.shields.io/badge/-Terraform-fff.svg?logo=terraform&style=plastic"><img src="https://img.shields.io/badge/-SQLite-003B57.svg?logo=sqlite&style=plastic"><img src="https://img.shields.io/badge/-Mysql-fff.svg?logo=mysql&style=plastic"><img src="https://img.shields.io/badge/-Redis-fff.svg?logo=redis&style=plastic"><img src="https://img.shields.io/badge/-Docker-fff.svg?logo=docker&style=plastic"><img src="https://img.shields.io/badge/-Git-fff.svg?logo=git&style=plastic"><img src="https://img.shields.io/badge/-Github-181717.svg?logo=github&style=plastic">
 
 | カテゴリ       | 技術                                                              |
 | -------------- | ----------------------------------------------------------------- |
